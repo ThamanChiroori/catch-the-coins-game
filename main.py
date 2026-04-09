@@ -31,7 +31,7 @@ coin_width = 20
 coin_height = 20
 coin_x = random.randint(0, WIDTH - coin_width)
 coin_y = 0
-coin_speed = 5
+coin_speed = 4.5
 
 # Game loop
 running = True
