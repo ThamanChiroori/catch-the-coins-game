@@ -16,11 +16,15 @@ background = pygame.image.load("assets/background.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 # Player
-player_width = 40
-player_height = 55
+player_width = 50
+player_height = 70
 player_x = WIDTH // 2 - player_width // 2
-player_y = HEIGHT - 60
+player_y = HEIGHT - 70
 player_speed = 7
+
+# 👉 Load player image (NEW)
+player_img = pygame.image.load("assets/jojo.png")
+player_img = pygame.transform.scale(player_img, (player_width, player_height))
 
 # Coin
 coin_width = 45
@@ -36,7 +40,6 @@ coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
 # Load heart image
 heart_img = pygame.image.load("assets/heart.png")
 heart_img = pygame.transform.scale(heart_img, (30, 30))
-
 
 # Game data
 score = 0
@@ -98,8 +101,8 @@ while running:
     else:
         player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
 
-    # Draw player
-    pygame.draw.rect(screen, (0, 200, 255), player_rect)
+    # 👉 Draw player IMAGE instead of rectangle
+    screen.blit(player_img, (player_x, player_y))
 
     # Draw coin
     screen.blit(coin_img, (coin_x, coin_y))
