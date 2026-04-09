@@ -41,6 +41,16 @@ game_over = False
 
 font = pygame.font.SysFont(None, 36)
 
+# Draw heart shape for lives
+def draw_heart(x, y):
+    pygame.draw.circle(screen, (255, 0, 0), (x, y), 8)
+    pygame.draw.circle(screen, (255, 0, 0), (x + 12, y), 8)
+    pygame.draw.polygon(screen, (255, 0, 0), [
+        (x - 6, y + 2),
+        (x + 18, y + 2),
+        (x + 6, y + 22)
+    ])
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -104,9 +114,8 @@ while running:
 
     # UI
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-    lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
-
-    screen.blit(lives_text, (20, 10))
+    for i in range(lives):
+    draw_heart(20 + i * 35, 20)
     screen.blit(score_text, (WIDTH - 150, 10))
 
     if game_over:
