@@ -24,8 +24,8 @@ player_y = HEIGHT - 60
 player_speed = 7
 
 # Coin
-coin_width = 40
-coin_height = 40
+coin_width = 35
+coin_height = 35
 coin_x = random.randint(0, WIDTH - coin_width)
 coin_y = 0
 coin_speed = 5
