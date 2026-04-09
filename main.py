@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 
 # Load background
 background = pygame.image.load("assets/background.png")
-background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+background = pygame.transform.scale(background, (WIDTH, 550))
 
 # Player
 player_width = 50
@@ -59,7 +59,7 @@ while running:
             if game_over and event.key == pygame.K_r:
                 player_x = WIDTH // 2 - player_width // 2
                 coin_x = random.randint(0, WIDTH - coin_width)
-                coin_y = 0
+                coin_y = 50
                 score = 0
                 lives = 3
                 game_over = False
@@ -84,7 +84,7 @@ while running:
         coin_y += coin_speed
 
         if coin_y > HEIGHT:
-            coin_y = 0
+            coin_y = 50
             coin_x = random.randint(0, WIDTH - coin_width)
             lives -= 1
 
@@ -116,7 +116,7 @@ while running:
     # Draw score
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))
     screen.blit(score_text, (WIDTH - 150, 10))
-
+    
     # Game over text
     if game_over:
         over_text = font.render("GAME OVER - Press R to Restart", True, (255, 80, 80))
