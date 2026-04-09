@@ -95,9 +95,8 @@ while running:
             score += 1
             coin_y = 0
             coin_x = random.randint(0, WIDTH - coin_width)
-
-            coin_speed = min(12, 5 + score // 5)
-            player_speed = min(10, 7 + score // 10)
+            coin_speed = min(10, 5 + score // 6)
+            player_speed = min(12, 7 + score // 7)
 
         if lives <= 0:
             game_over = True
