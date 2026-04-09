@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # Initialize pygame
 pygame.init()
@@ -25,6 +26,13 @@ player_x = WIDTH // 2 - player_width // 2
 player_y = HEIGHT - 60
 player_speed = 7
 
+# coin properties
+coin_width = 20
+coin_height = 20
+coin_x = random.randint(0, WIDTH - coin_width)
+coin_y = 0
+coin_speed = 5
+
 # Game loop
 running = True
 clock = pygame.time.Clock()
@@ -43,8 +51,17 @@ while running:
     if keys[pygame.K_RIGHT] and player_x < WIDTH - player_width:
         player_x += player_speed
 
+    coin_y += coin_speed
+    if coin_y > HEIGHT:
+        coin_y = 0
+        coin_x = random.randint(0, WIDTH - coin_width)
+
     # Draw background
     screen.blit(background, (0, 0))
+
+    # Draw coin
+    coin_rect = pygame.Rect(coin_x, coin_y, coin_width, coin_height)
+    pygame.draw.rect(screen, (255, 215, 0), coin_rect)
 
     # Draw player
     player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
