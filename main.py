@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 
 # Load background
 background = pygame.image.load("assets/background.png")
-background = pygame.transform.scale(background, (WIDTH, 550))
+background = pygame.transform.scale(background, (WIDTH+270, HEIGHT +50))
 
 # Player
 player_width = 50
@@ -65,7 +65,7 @@ while running:
                 game_over = False
 
     # Draw background
-    screen.blit(background, (0, 50))
+    screen.blit(background, (-50, 50))
 
     # Top ribbon
     ribbon_height = 50
