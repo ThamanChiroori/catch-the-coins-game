@@ -107,8 +107,8 @@ while running:
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))
     lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
 
-    screen.blit(score_text, (20, 10))
-    screen.blit(lives_text, (WIDTH - 150, 10))
+    screen.blit(lives_text, (20, 10))
+    screen.blit(score_text, (WIDTH - 150, 10))
 
     # Game Over text
     if game_over:
