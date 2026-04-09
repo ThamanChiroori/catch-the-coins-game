@@ -33,9 +33,10 @@ coin_speed = 5
 coin_img = pygame.image.load("assets/coin.png")
 coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
 
-# Load heart image (JPG version)
-heart_img = pygame.image.load("assets/heart.jpg")
+# Load heart image
+heart_img = pygame.image.load("assets/heart.png")
 heart_img = pygame.transform.scale(heart_img, (30, 30))
+heart_img.set_colorkey((0, 0, 0))  # Removes black background if needed
 
 # Game data
 score = 0
@@ -103,7 +104,7 @@ while running:
     # Draw coin
     screen.blit(coin_img, (coin_x, coin_y))
 
-    # Draw hearts (JPG)
+    # Draw hearts for lives
     for i in range(lives):
         screen.blit(heart_img, (20 + i * 40, 10))
 
