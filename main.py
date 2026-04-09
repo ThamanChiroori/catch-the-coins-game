@@ -9,12 +9,11 @@ WIDTH = 800
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Catch the Falling Coins")
+clock = pygame.time.Clock()
 
 # Load background
 background = pygame.image.load("assets/background.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-
-clock = pygame.time.Clock()
 
 # Player
 player_width = 40
@@ -30,9 +29,13 @@ coin_x = random.randint(0, WIDTH - coin_width)
 coin_y = 0
 coin_speed = 5
 
-# 👉 Load coin image
+# Load coin image
 coin_img = pygame.image.load("assets/coin.png")
 coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
+
+# Load heart image (JPG version)
+heart_img = pygame.image.load("assets/heart.jpg")
+heart_img = pygame.transform.scale(heart_img, (30, 30))
 
 # Game data
 score = 0
@@ -41,23 +44,13 @@ game_over = False
 
 font = pygame.font.SysFont(None, 36)
 
-# Draw heart shape for lives
-def draw_heart(x, y):
-    pygame.draw.circle(screen, (255, 0, 0), (x, y), 8)
-    pygame.draw.circle(screen, (255, 0, 0), (x + 12, y), 8)
-    pygame.draw.polygon(screen, (255, 0, 0), [
-        (x - 6, y + 2),
-        (x + 18, y + 2),
-        (x + 6, y + 22)
-    ])
-
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Restart
+        # Restart game
         if event.type == pygame.KEYDOWN:
             if game_over and event.key == pygame.K_r:
                 player_x = WIDTH // 2 - player_width // 2
@@ -67,10 +60,10 @@ while running:
                 lives = 3
                 game_over = False
 
-    # Draw background (your change kept)
-    screen.blit(background, (0, 50))
+    # Draw background
+    screen.blit(background, (0, 0))
 
-    # Ribbon
+    # Top ribbon
     ribbon_height = 50
     pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, ribbon_height))
     pygame.draw.line(screen, (100, 100, 100), (0, ribbon_height), (WIDTH, ribbon_height), 2)
@@ -101,23 +94,24 @@ while running:
 
         if lives <= 0:
             game_over = True
-
     else:
         player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
-        coin_rect = pygame.Rect(coin_x, coin_y, coin_width, coin_height)
 
-    # Draw player (still rectangle for now)
+    # Draw player
     pygame.draw.rect(screen, (0, 200, 255), player_rect)
 
-    # 👉 Draw coin image instead of rectangle
+    # Draw coin
     screen.blit(coin_img, (coin_x, coin_y))
 
-    # UI
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    # Draw hearts (JPG)
     for i in range(lives):
-    draw_heart(20 + i * 35, 20)
+        screen.blit(heart_img, (20 + i * 40, 10))
+
+    # Draw score
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
     screen.blit(score_text, (WIDTH - 150, 10))
 
+    # Game over text
     if game_over:
         over_text = font.render("GAME OVER - Press R to Restart", True, (255, 80, 80))
         text_rect = over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
