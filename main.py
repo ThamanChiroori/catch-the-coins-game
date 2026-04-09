@@ -36,7 +36,7 @@ coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
 # Load heart image
 heart_img = pygame.image.load("assets/heart.png")
 heart_img = pygame.transform.scale(heart_img, (30, 30))
-heart_img.set_colorkey((0, 0, 0))  # Removes black background if needed
+
 
 # Game data
 score = 0
@@ -62,7 +62,7 @@ while running:
                 game_over = False
 
     # Draw background
-    screen.blit(background, (0, 0))
+    screen.blit(background, (0, 50))
 
     # Top ribbon
     ribbon_height = 50
