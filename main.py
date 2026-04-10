@@ -113,9 +113,15 @@ while running:
     for i in range(lives):
         screen.blit(heart_img, (20 + i * 40, 10))
 
-    # Draw score
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-    screen.blit(score_text, (WIDTH - 150, 10))
+    # Draw coin icon in ribbon
+    ui_coin_x = WIDTH - 120
+    ui_coin_y = 2
+    screen.blit(coin_img, (ui_coin_x, ui_coin_y))
+
+    # Draw score number next to it
+    score_text = font.render(f"{score}", True, (255, 255, 255))
+    screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
+    
     
     # Game over text
     if game_over:
