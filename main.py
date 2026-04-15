@@ -154,10 +154,12 @@ while running:
         if not game_over:
             keys = pygame.key.get_pressed()
 
-            if keys[pygame.K_LEFT] and player_x > 0:
+            # Move left (LEFT arrow OR A)
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
                 player_x -= player_speed
 
-            if keys[pygame.K_RIGHT] and player_x < WIDTH - player_width:
+            # Move right (RIGHT arrow OR D)
+            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
                 player_x += player_speed
 
             coin_y += coin_speed
