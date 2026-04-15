@@ -11,9 +11,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Catch the Falling Coins")
 clock = pygame.time.Clock()
 
-# Load background
+# Load background (your values kept)
 background = pygame.image.load("assets/background.png")
-background = pygame.transform.scale(background, (WIDTH+270, HEIGHT +50))
+background = pygame.transform.scale(background, (WIDTH+270, HEIGHT+50))
 
 # Player
 player_width = 50
@@ -22,7 +22,7 @@ player_x = WIDTH // 2 - player_width // 2
 player_y = HEIGHT - 70
 player_speed = 7
 
-# 👉 Load player image (NEW)
+# Player image
 player_img = pygame.image.load("assets/jojo.png")
 player_img = pygame.transform.scale(player_img, (player_width, player_height))
 
@@ -33,13 +33,18 @@ coin_x = random.randint(0, WIDTH - coin_width)
 coin_y = 0
 coin_speed = 5
 
-# Load coin image
 coin_img = pygame.image.load("assets/coin.png")
 coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
 
-# Load heart image
+# Heart
 heart_img = pygame.image.load("assets/heart.png")
 heart_img = pygame.transform.scale(heart_img, (30, 30))
+
+# Arrows
+left_arrow = pygame.image.load("assets/leftArrow.png")
+right_arrow = pygame.image.load("assets/rightArrow.png")
+left_arrow = pygame.transform.scale(left_arrow, (40, 40))
+right_arrow = pygame.transform.scale(right_arrow, (40, 40))
 
 # Game data
 score = 0
@@ -48,86 +53,163 @@ game_over = False
 
 font = pygame.font.SysFont(None, 36)
 
+# State system
+state = "menu"
+selected_character = "jojo"
+
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Restart game
-        if event.type == pygame.KEYDOWN:
-            if game_over and event.key == pygame.K_r:
-                player_x = WIDTH // 2 - player_width // 2
-                coin_x = random.randint(0, WIDTH - coin_width)
+        # ========= MENU =========
+        if state == "menu":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+
+                if 350 < mx < 450 and 300 < my < 330:
+                    state = "game"
+
+                if 300 < mx < 500 and 350 < my < 380:
+                    state = "character_select"
+
+        # ===== CHARACTER SELECT =====
+        elif state == "character_select":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+
+                if 500 < mx < 600 and 250 < my < 280:  # OK
+                    selected_character = "jojo"
+                    state = "menu"
+
+                if 500 < mx < 650 and 300 < my < 330:  # CANCEL
+                    state = "menu"
+
+        # ========= GAME =========
+        elif state == "game":
+            if event.type == pygame.KEYDOWN:
+                if game_over and event.key == pygame.K_r:
+                    state = "menu"
+                    game_over = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN and game_over:
+                mx, my = pygame.mouse.get_pos()
+
+                # Retry
+                if 350 < mx < 450 and 300 < my < 330:
+                    player_x = WIDTH // 2 - player_width // 2
+                    coin_x = random.randint(0, WIDTH - coin_width)
+                    coin_y = 50
+                    score = 0
+                    lives = 3
+                    game_over = False
+
+                # Main menu
+                if 320 < mx < 480 and 340 < my < 370:
+                    state = "menu"
+                    game_over = False
+
+    # ========= DRAW =========
+
+    # ----- MENU -----
+    if state == "menu":
+        screen.blit(background, (0, 0))
+
+        title = font.render("Catch the Falling Coins", True, (255,255,255))
+        start_text = font.render("START", True, (255,255,255))
+        char_text = font.render("SELECT CHARACTER", True, (255,255,255))
+
+        screen.blit(title, (WIDTH//2 - 150, 150))
+        screen.blit(start_text, (WIDTH//2 - 50, 300))
+        screen.blit(char_text, (WIDTH//2 - 120, 350))
+
+    # ----- CHARACTER SELECT -----
+    elif state == "character_select":
+        screen.blit(background, (0, 0))
+
+        title = font.render("SELECT CHARACTER", True, (255,255,255))
+        screen.blit(title, (WIDTH//2 - 150, 50))
+
+        jojo_big = pygame.transform.scale(player_img, (150, 210))
+        screen.blit(jojo_big, (150, 200))
+
+        screen.blit(left_arrow, (100, 260))
+        screen.blit(right_arrow, (330, 260))
+
+        ok_text = font.render("OK", True, (255,255,255))
+        cancel_text = font.render("CANCEL", True, (255,255,255))
+
+        screen.blit(ok_text, (500, 250))
+        screen.blit(cancel_text, (500, 300))
+
+    # ----- GAME -----
+    elif state == "game":
+        screen.blit(background, (-50, 50))
+
+        # Ribbon
+        pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, 50))
+        pygame.draw.line(screen, (100, 100, 100), (0, 50), (WIDTH, 50), 2)
+
+        if not game_over:
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_LEFT] and player_x > 0:
+                player_x -= player_speed
+
+            if keys[pygame.K_RIGHT] and player_x < WIDTH - player_width:
+                player_x += player_speed
+
+            coin_y += coin_speed
+
+            if coin_y > HEIGHT:
                 coin_y = 50
-                score = 0
-                lives = 3
-                game_over = False
+                coin_x = random.randint(0, WIDTH - coin_width)
+                lives -= 1
 
-    # Draw background
-    screen.blit(background, (-50, 50))
+            player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
+            coin_rect = pygame.Rect(coin_x, coin_y, coin_width, coin_height)
 
-    # Top ribbon
-    ribbon_height = 50
-    pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, ribbon_height))
-    pygame.draw.line(screen, (100, 100, 100), (0, ribbon_height), (WIDTH, ribbon_height), 2)
+            if player_rect.colliderect(coin_rect):
+                score += 1
+                coin_y = 0
+                coin_x = random.randint(0, WIDTH - coin_width)
 
-    if not game_over:
-        keys = pygame.key.get_pressed()
+                coin_speed = min(10, 5 + score // 6)
+                player_speed = min(12, 7 + score // 7)
 
-        if keys[pygame.K_LEFT] and player_x > 0:
-            player_x -= player_speed
+            if lives <= 0:
+                game_over = True
+        else:
+            player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
 
-        if keys[pygame.K_RIGHT] and player_x < WIDTH - player_width:
-            player_x += player_speed
+        # Draw player
+        screen.blit(player_img, (player_x, player_y))
 
-        coin_y += coin_speed
+        # Draw coin
+        screen.blit(coin_img, (coin_x, coin_y))
 
-        if coin_y > HEIGHT:
-            coin_y = 50
-            coin_x = random.randint(0, WIDTH - coin_width)
-            lives -= 1
+        # Hearts
+        for i in range(lives):
+            screen.blit(heart_img, (20 + i * 40, 10))
 
-        player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
-        coin_rect = pygame.Rect(coin_x, coin_y, coin_width, coin_height)
+        # Coin UI
+        ui_coin_x = WIDTH - 120
+        ui_coin_y = 2
+        screen.blit(coin_img, (ui_coin_x, ui_coin_y))
 
-        if player_rect.colliderect(coin_rect):
-            score += 1
-            coin_y = 0
-            coin_x = random.randint(0, WIDTH - coin_width)
-            coin_speed = min(10, 5 + score // 6)
-            player_speed = min(12, 7 + score // 7)
+        score_text = font.render(f"{score}", True, (255, 255, 255))
+        screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
 
-        if lives <= 0:
-            game_over = True
-    else:
-        player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
+        # Game over UI
+        if game_over:
+            over_text = font.render("GAME OVER", True, (255, 80, 80))
+            retry_text = font.render("RETRY", True, (255,255,255))
+            menu_text = font.render("MAIN MENU", True, (255,255,255))
 
-    # 👉 Draw player IMAGE instead of rectangle
-    screen.blit(player_img, (player_x, player_y))
-
-    # Draw coin
-    screen.blit(coin_img, (coin_x, coin_y))
-
-    # Draw hearts for lives
-    for i in range(lives):
-        screen.blit(heart_img, (20 + i * 40, 10))
-
-    # Draw coin icon in ribbon
-    ui_coin_x = WIDTH - 120
-    ui_coin_y = 2
-    screen.blit(coin_img, (ui_coin_x, ui_coin_y))
-
-    # Draw score number next to it
-    score_text = font.render(f"{score}", True, (255, 255, 255))
-    screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
-    
-    
-    # Game over text
-    if game_over:
-        over_text = font.render("GAME OVER - Press R to Restart", True, (255, 80, 80))
-        text_rect = over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-        screen.blit(over_text, text_rect)
+            screen.blit(over_text, (WIDTH//2 - 100, HEIGHT//2 - 50))
+            screen.blit(retry_text, (WIDTH//2 - 50, HEIGHT//2))
+            screen.blit(menu_text, (WIDTH//2 - 80, HEIGHT//2 + 40))
 
     pygame.display.update()
     clock.tick(60)
