@@ -10,6 +10,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Catch the Falling Coins")
 clock = pygame.time.Clock()
 
+# Background
 background = pygame.image.load("assets/background.png")
 background = pygame.transform.scale(background, (WIDTH+270, HEIGHT+50))
 
@@ -69,23 +70,25 @@ while running:
 
     mouse_pos = pygame.mouse.get_pos()
 
-    # ===== MENU TEXT WITH HOVER =====
-    start_color = (255,255,255)
-    char_color = (255,255,255)
+    # SETTINGS
+    settings_text = font.render("SETTINGS", True, (255,255,255))
+    settings_rect = settings_text.get_rect(topleft=(20, 10))
+    if settings_rect.collidepoint(mouse_pos):
+        settings_text = font.render("SETTINGS", True, (255,220,100))
 
-    start_text = font.render("START", True, start_color)
-    char_text = font.render("SELECT CHARACTER", True, char_color)
+    # MENU TEXT
+    start_text = font.render("START", True, (255,255,255))
+    char_text = font.render("SELECT CHARACTER", True, (255,255,255))
 
     start_rect = start_text.get_rect(center=(WIDTH//2, 310))
     char_rect = char_text.get_rect(center=(WIDTH//2, 370))
 
     if start_rect.collidepoint(mouse_pos):
         start_text = font.render("START", True, (255,220,100))
-
     if char_rect.collidepoint(mouse_pos):
         char_text = font.render("SELECT CHARACTER", True, (255,220,100))
 
-    # Character select buttons
+    # Character buttons
     ok_text = font.render("OK", True, (255,255,255))
     cancel_text = font.render("CANCEL", True, (255,255,255))
 
@@ -94,7 +97,6 @@ while running:
 
     if ok_rect.collidepoint(mouse_pos):
         ok_text = font.render("OK", True, (255,220,100))
-
     if cancel_rect.collidepoint(mouse_pos):
         cancel_text = font.render("CANCEL", True, (255,220,100))
 
@@ -107,22 +109,20 @@ while running:
 
     if retry_rect.collidepoint(mouse_pos):
         retry_text = font.render("RETRY", True, (255,220,100))
-
     if menu_rect.collidepoint(mouse_pos):
         menu_text = font.render("MAIN MENU", True, (255,220,100))
 
     title = big_font.render("Catch the Falling Coins", True, (255,255,255))
     title_rect = title.get_rect(center=(WIDTH//2, 150))
 
+    # EVENTS
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # MENU
         if state == "menu":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_rect.collidepoint(event.pos):
-                    # 🔥 RESET GAME HERE (FIX)
                     score = 0
                     lives = 3
                     game_over = False
@@ -133,16 +133,13 @@ while running:
                 if char_rect.collidepoint(event.pos):
                     state = "character_select"
 
-        # CHARACTER SELECT
         elif state == "character_select":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if ok_rect.collidepoint(event.pos):
                     state = "menu"
-
                 if cancel_rect.collidepoint(event.pos):
                     state = "menu"
 
-        # GAME
         elif state == "game":
             if event.type == pygame.MOUSEBUTTONDOWN and game_over:
                 if retry_rect.collidepoint(event.pos):
@@ -155,17 +152,24 @@ while running:
                     state = "menu"
                     game_over = False
 
-    # ===== DRAW =====
+    # DRAW BACKGROUND (GLOBAL)
+    screen.blit(background, (-50, 50))
 
+    # RIBBON (ALL SCREENS)
+    pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, 50))
+    pygame.draw.line(screen, (100, 100, 100), (0, 50), (WIDTH, 50), 2)
+
+    # 🔥 SETTINGS ONLY IN MENU + CHARACTER SELECT
+    if state in ["menu", "character_select"]:
+        screen.blit(settings_text, settings_rect)
+
+    # STATES
     if state == "menu":
-        screen.blit(background, (0, 0))
         screen.blit(title, title_rect)
         screen.blit(start_text, start_rect)
         screen.blit(char_text, char_rect)
 
     elif state == "character_select":
-        screen.blit(background, (0, 0))
-
         title2 = big_font.render("SELECT CHARACTER", True, (255,255,255))
         screen.blit(title2, title2.get_rect(center=(WIDTH//2, 80)))
 
@@ -184,11 +188,6 @@ while running:
         screen.blit(cancel_text, cancel_rect)
 
     elif state == "game":
-        screen.blit(background, (-50, 50))
-
-        pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, 50))
-        pygame.draw.line(screen, (100, 100, 100), (0, 50), (WIDTH, 50), 2)
-
         if not game_over:
             keys = pygame.key.get_pressed()
 
