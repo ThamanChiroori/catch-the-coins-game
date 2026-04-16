@@ -49,6 +49,15 @@ coin_img = pygame.transform.scale(coin_img, (coin_width, coin_height))
 heart_img = pygame.image.load("assets/heart.png")
 heart_img = pygame.transform.scale(heart_img, (30, 30))
 
+# Game Over Image
+gameover_img = pygame.image.load("assets/gameOver.png")
+scale_factor = 1.6
+gameover_img = pygame.transform.scale(
+    gameover_img,
+    (int(gameover_img.get_width() * scale_factor),
+     int(gameover_img.get_height() * scale_factor))
+)
+
 # Arrows
 left_arrow = pygame.image.load("assets/leftArrow.png")
 right_arrow = pygame.image.load("assets/rightArrow.png")
@@ -100,12 +109,12 @@ while running:
     if cancel_rect.collidepoint(mouse_pos):
         cancel_text = font.render("CANCEL", True, (255,220,100))
 
-    # Game over buttons
+    # Game over buttons (moved down)
     retry_text = font.render("RETRY", True, (255,255,255))
     menu_text = font.render("MAIN MENU", True, (255,255,255))
 
-    retry_rect = retry_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-    menu_rect = menu_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 50))
+    retry_rect = retry_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 20))
+    menu_rect = menu_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 70))
 
     if retry_rect.collidepoint(mouse_pos):
         retry_text = font.render("RETRY", True, (255,220,100))
@@ -152,14 +161,14 @@ while running:
                     state = "menu"
                     game_over = False
 
-    # DRAW BACKGROUND (GLOBAL)
+    # DRAW BACKGROUND
     screen.blit(background, (-50, 50))
 
-    # RIBBON (ALL SCREENS)
+    # RIBBON
     pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, 50))
     pygame.draw.line(screen, (100, 100, 100), (0, 50), (WIDTH, 50), 2)
 
-    # 🔥 SETTINGS ONLY IN MENU + CHARACTER SELECT
+    # SETTINGS only in menu + character screen
     if state in ["menu", "character_select"]:
         screen.blit(settings_text, settings_rect)
 
@@ -230,9 +239,10 @@ while running:
         score_text = font.render(f"{score}", True, (255,255,255))
         screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
 
+        # 🔥 GAME OVER IMAGE
         if game_over:
-            over_text = big_font.render("GAME OVER", True, (255, 80, 80))
-            screen.blit(over_text, over_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 60)))
+            gameover_rect = gameover_img.get_rect(center=(WIDTH//2, HEIGHT//2 - 80))
+            screen.blit(gameover_img, gameover_rect)
 
             screen.blit(retry_text, retry_rect)
             screen.blit(menu_text, menu_rect)
