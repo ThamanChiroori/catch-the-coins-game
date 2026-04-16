@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 pygame.init()
 
@@ -58,6 +59,19 @@ gameover_img = pygame.transform.scale(
      int(gameover_img.get_height() * scale_factor))
 )
 
+# Bounce + Hover variables
+gameover_y = -200
+gameover_velocity = 0
+gravity = 1
+bounce_strength = -15
+gameover_target_y = HEIGHT//2 - 80
+gameover_active = False
+
+# Hover animation
+hover_timer = 0
+hover_amplitude = 3   # how many pixels up/down
+hover_speed = 0.08    # speed of movement
+
 # Arrows
 left_arrow = pygame.image.load("assets/leftArrow.png")
 right_arrow = pygame.image.load("assets/rightArrow.png")
@@ -109,7 +123,7 @@ while running:
     if cancel_rect.collidepoint(mouse_pos):
         cancel_text = font.render("CANCEL", True, (255,220,100))
 
-    # Game over buttons (moved down)
+    # Game over buttons
     retry_text = font.render("RETRY", True, (255,255,255))
     menu_text = font.render("MAIN MENU", True, (255,255,255))
 
@@ -156,10 +170,12 @@ while running:
                     lives = 3
                     coin_y = 50
                     game_over = False
+                    gameover_active = False
 
                 if menu_rect.collidepoint(event.pos):
                     state = "menu"
                     game_over = False
+                    gameover_active = False
 
     # DRAW BACKGROUND
     screen.blit(background, (-50, 50))
@@ -226,6 +242,10 @@ while running:
 
             if lives <= 0:
                 game_over = True
+                gameover_active = True
+                gameover_y = -200
+                gameover_velocity = 0
+                hover_timer = 0  # reset hover
 
         screen.blit(player_img, (player_x, player_y))
         screen.blit(coin_img, (coin_x, coin_y))
@@ -239,13 +259,30 @@ while running:
         score_text = font.render(f"{score}", True, (255,255,255))
         screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
 
-        # 🔥 GAME OVER IMAGE
+        # 🎯 GAME OVER ANIMATION
         if game_over:
-            gameover_rect = gameover_img.get_rect(center=(WIDTH//2, HEIGHT//2 - 80))
+
+            if gameover_active:
+                gameover_velocity += gravity
+                gameover_y += gameover_velocity
+
+                if gameover_y >= gameover_target_y:
+                    gameover_y = gameover_target_y
+                    gameover_velocity = bounce_strength
+                    gameover_active = False
+
+            else:
+                # ✨ HOVER EFFECT
+                hover_timer += 1
+                hover_offset = math.sin(hover_timer * hover_speed) * hover_amplitude
+                gameover_y = gameover_target_y + hover_offset
+
+            gameover_rect = gameover_img.get_rect(center=(WIDTH//2, int(gameover_y)))
             screen.blit(gameover_img, gameover_rect)
 
-            screen.blit(retry_text, retry_rect)
-            screen.blit(menu_text, menu_rect)
+            if not gameover_active:
+                screen.blit(retry_text, retry_rect)
+                screen.blit(menu_text, menu_rect)
 
     pygame.display.update()
     clock.tick(60)
