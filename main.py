@@ -67,10 +67,24 @@ bounce_strength = -15
 gameover_target_y = HEIGHT//2 - 80
 gameover_active = False
 
-# Hover animation
 hover_timer = 0
-hover_amplitude = 3   # how many pixels up/down
-hover_speed = 0.08    # speed of movement
+hover_amplitude = 6
+hover_speed = 0.05
+
+# 🔥 PARTICLES
+particles = []
+
+def spawn_particles(x, y):
+    for _ in range(40):
+        particle = {
+            "x": x,
+            "y": y,
+            "vx": random.uniform(-4, 4),
+            "vy": random.uniform(-6, -1),
+            "size": random.randint(3, 6),
+            "life": random.randint(30, 60)
+        }
+        particles.append(particle)
 
 # Arrows
 left_arrow = pygame.image.load("assets/leftArrow.png")
@@ -171,11 +185,13 @@ while running:
                     coin_y = 50
                     game_over = False
                     gameover_active = False
+                    particles.clear()
 
                 if menu_rect.collidepoint(event.pos):
                     state = "menu"
                     game_over = False
                     gameover_active = False
+                    particles.clear()
 
     # DRAW BACKGROUND
     screen.blit(background, (-50, 50))
@@ -184,11 +200,9 @@ while running:
     pygame.draw.rect(screen, (20, 20, 20), (0, 0, WIDTH, 50))
     pygame.draw.line(screen, (100, 100, 100), (0, 50), (WIDTH, 50), 2)
 
-    # SETTINGS only in menu + character screen
     if state in ["menu", "character_select"]:
         screen.blit(settings_text, settings_rect)
 
-    # STATES
     if state == "menu":
         screen.blit(title, title_rect)
         screen.blit(start_text, start_rect)
@@ -245,7 +259,24 @@ while running:
                 gameover_active = True
                 gameover_y = -200
                 gameover_velocity = 0
-                hover_timer = 0  # reset hover
+                hover_timer = 0
+
+                # 🔥 spawn particles at player
+                spawn_particles(player_x + player_width//2, player_y)
+
+        # Draw particles
+        for particle in particles[:]:
+            particle["x"] += particle["vx"]
+            particle["y"] += particle["vy"]
+            particle["vy"] += 0.3
+            particle["life"] -= 1
+
+            pygame.draw.circle(screen, (255, 215, 0),
+                               (int(particle["x"]), int(particle["y"])),
+                               particle["size"])
+
+            if particle["life"] <= 0:
+                particles.remove(particle)
 
         screen.blit(player_img, (player_x, player_y))
         screen.blit(coin_img, (coin_x, coin_y))
@@ -259,7 +290,6 @@ while running:
         score_text = font.render(f"{score}", True, (255,255,255))
         screen.blit(score_text, (ui_coin_x + coin_width + 5, 13))
 
-        # 🎯 GAME OVER ANIMATION
         if game_over:
 
             if gameover_active:
@@ -272,7 +302,6 @@ while running:
                     gameover_active = False
 
             else:
-                # ✨ HOVER EFFECT
                 hover_timer += 1
                 hover_offset = math.sin(hover_timer * hover_speed) * hover_amplitude
                 gameover_y = gameover_target_y + hover_offset
