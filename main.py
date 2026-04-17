@@ -271,7 +271,7 @@ while running:
             particle["vy"] += 0.3
             particle["life"] -= 1
 
-            pygame.draw.circle(screen, (255, 215, 0),
+            pygame.draw.circle(screen, (255, 50, 50),
                                (int(particle["x"]), int(particle["y"])),
                                particle["size"])
 
