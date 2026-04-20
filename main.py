@@ -30,11 +30,14 @@ player_height = 70
 player_x = WIDTH // 2 - player_width // 2
 player_y = HEIGHT - 70
 player_speed = 7
+facing_right = False
 
-player_img = pygame.transform.scale(
+player_img_original = pygame.transform.scale(
     characters[current_character]["image"],
     (player_width, player_height)
 )
+
+player_img = player_img_original
 
 # Coin
 coin_width = 45
@@ -231,10 +234,12 @@ while running:
             keys = pygame.key.get_pressed()
 
             if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
+                facing_right = False
                 player_x -= player_speed
 
             if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
                 player_x += player_speed
+                facing_right = True
 
             coin_y += coin_speed
 
@@ -277,6 +282,11 @@ while running:
 
             if particle["life"] <= 0:
                 particles.remove(particle)
+
+        if facing_right:
+            player_img = pygame.transform.flip(player_img_original, True, False)
+        else:
+            player_img = player_img_original
 
         screen.blit(player_img, (player_x, player_y))
         screen.blit(coin_img, (coin_x, coin_y))
